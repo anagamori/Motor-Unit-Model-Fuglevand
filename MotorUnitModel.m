@@ -115,6 +115,7 @@ end
 output.Force = force;
 output.SpikeTrain = spike_train;
 output.TotalForce = sum(force);
-%output.g = outputG;
-%output.FR = outputFR;
+output.FR = outputFR;
+output.g = outputG;
+
 end
