@@ -41,7 +41,7 @@ force = zeros(N_MU,length(t));
 E = U*Emax_MU;
 
 for i = 1:length(t)
-    FR_MU = g_e_MU.*(E(i) - RTE_MU) + MFR_MU;
+    FR_MU = g_e_MU.*(E(i) - RTE_MU) + MFR_MU;    
     outputFR(:,i) = FR_MU;
     for n = 1:length(find(FR_MU>=MFR_MU))
         if FR_MU(n) > PFR_MU(n)
@@ -66,8 +66,9 @@ for i = 1:length(t)
                 g = (S_MU/StimulusRate)/0.3;
             end
             outputG(n,i) = g;
-            force_temp = conv(spike_train_temp,g*twitch(n,:));             
-            force(n,:) = force(n,:)+ force_temp(1:length(t));
+            force_temp = conv(spike_train_temp,g*twitch(n,:));
+            force(n,i+1:end) = 0;
+            force(n,:) = force(n,:) + force_temp(1:length(t)) + force(n,i);
         else
             if spike_time(n) == i
                 spike_train(n,i) = 1;
@@ -88,8 +89,9 @@ for i = 1:length(t)
                 end
                 outputG(n,i) = g;
                 
-                force_temp = conv(spike_train_temp,g*twitch(n,:));             
-                force(n,:) = force(n,:)+ force_temp(1:length(t));
+                force_temp = conv(spike_train_temp,g*twitch(n,:))+force(n,i);
+                force(n,i+1:end) = 0;
+                force(n,:) = force(n,:) + force_temp(1:length(t));
             elseif i > spike_time(n) + round(1/FR_MU(n)*Fs)
                 spike_train(n,i) = 1;
                 spike_train_temp(i) = 1;
@@ -103,10 +105,9 @@ for i = 1:length(t)
                 end
                 outputG(n,i) = g;
                 
-                force_temp = conv(spike_train_temp,g*twitch(n,:));             
-                force(n,:) = force(n,:)+ force_temp(1:length(t));
-%                 force_temp = twitch_function(twitch(n,:),force(n,i),T_MU(n),Fs);             
-%                 force(n,i:i+length(force_temp)-1) = force_temp;
+               force_temp = conv(spike_train_temp,g*twitch(n,:))+force(n,i);
+               force(n,i+1:end) = 0;
+               force(n,:) = force(n,:) + force_temp(1:length(t));
             end
         end
         
@@ -120,11 +121,8 @@ output.TotalForce = sum(force);
 output.FR = outputFR;
 output.g = outputG;
 
-    function y = twitch_function(twitch,x0,T,Fs)
-        peakTwitch = max(twitch);
-        f1 = twitch + x0;
-        f2 = (peakTwitch+x0)/peakTwitch*twitch;
-        y = [f1(1:round(T*Fs)) f2(round(T*Fs):end)];
+    function twitch = twitch_function()
+        
     end
 
 end

@@ -21,7 +21,7 @@ for k = 1
     modelParameter.g_e = 1;    
     modelParameter.PFR1 = 35;   
     modelParameter.PFRD = 10;
-    modelParameter.cv = 0.1;    
+    modelParameter.cv = 0.2;    
     modelParameter.RP = 30;    
     modelParameter.T_L = 90;    
     modelParameter.RT = 3;   
@@ -40,5 +40,16 @@ for k = 1
     hold on
     k
 end
+
+CS = sum(output.SpikeTrain);
+Force = output_temp.TotalForce(5*Fs+1:end);
+std(Force)/mean(Force)
+[pxx,f] = pwelch(Force-mean(Force),[],[],0:0.1:30,Fs,'power');
+[pxx2,f] = pwelch(CS-mean(CS),[],[],0:0.1:30,Fs,'power');
+figure(2)
+plot(f,pxx)
+
+figure(3)
+plot(f,pxx2)
 
 
