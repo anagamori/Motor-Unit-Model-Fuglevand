@@ -34,16 +34,24 @@ end
 
 outputFR = zeros(N_MU,length(t));
 outputG = zeros(N_MU,length(t));
-spike_time = zeros(N_MU,1);
+spike_time = zeros(1,N_MU);
 spike_train = zeros(N_MU,length(t));
 force = zeros(N_MU,length(t));
-
+outputIndex = cell(1,N_MU);
 E = U*Emax_MU;
 
 for i = 1:length(t)
     FR_MU = g_e_MU.*(E(i) - RTE_MU) + MFR_MU;
     outputFR(:,i) = FR_MU;
-    for n = 1:length(find(FR_MU>=MFR_MU))
+    
+    index_temp = ~any(spike_train,2);
+    index_1 = i_MU(FR_MU>=MFR_MU & index_temp');
+    %index_temp_2 = i_MU(spike_time==i);
+    index_2 = i_MU(FR_MU>=MFR_MU & spike_time==i);
+    index = [index_1 index_2];
+    outputIndex{i} = index;
+    for j = 1:length(index)
+        n = index(j);
         if FR_MU(n) > PFR_MU(n)
             FR_MU(n) = PFR_MU(n);
         end
@@ -107,6 +115,8 @@ for i = 1:length(t)
                 force(n,:) = force(n,:)+ force_temp(1:length(t));
 %                 force_temp = twitch_function(twitch(n,:),force(n,i),T_MU(n),Fs);             
 %                 force(n,i:i+length(force_temp)-1) = force_temp;
+%             else
+%                 break
             end
         end
         
@@ -119,12 +129,6 @@ output.SpikeTrain = spike_train;
 output.TotalForce = sum(force);
 output.FR = outputFR;
 output.g = outputG;
-
-    function y = twitch_function(twitch,x0,T,Fs)
-        peakTwitch = max(twitch);
-        f1 = twitch + x0;
-        f2 = (peakTwitch+x0)/peakTwitch*twitch;
-        y = [f1(1:round(T*Fs)) f2(round(T*Fs):end)];
-    end
+output.index = outputIndex;
 
 end

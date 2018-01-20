@@ -3,7 +3,7 @@ clear all
 clc
 
 Fs = 1000;
-t = 0:1/Fs:15;
+t = 0:1/Fs:5;
 N_temp = 50:50:1000;
 amp_temp = 0.05:0.05:1;
 RP_temp = 10:10:150;
@@ -21,8 +21,8 @@ for k = 1
     modelParameter.g_e = 1;    
     modelParameter.PFR1 = 35;   
     modelParameter.PFRD = 10;
-    modelParameter.cv = 0.2;    
-    modelParameter.RP = 30;    
+    modelParameter.cv = 0.1;    
+    modelParameter.RP = 100;    
     modelParameter.T_L = 90;    
     modelParameter.RT = 3;   
     modelParameter.P_amp = 0.03;
@@ -42,8 +42,8 @@ for k = 1
 end
 
 CS = sum(output.SpikeTrain);
-Force = output_temp.TotalForce(5*Fs+1:end);
-std(Force)/mean(Force)
+Force = output_temp.TotalForce(4*Fs+1:end);
+CoV = std(Force)/mean(Force)
 [pxx,f] = pwelch(Force-mean(Force),[],[],0:0.1:30,Fs,'power');
 [pxx2,f] = pwelch(CS-mean(CS),[],[],0:0.1:30,Fs,'power');
 figure(2)
