@@ -63,8 +63,7 @@ for t = 1:length(time)
                 Z(Z>3.9) = 3.9;
                 Z(Z<-3.9) = -3.9;
                 spike_time_temp = (mu + mu*cv*Z)*Fs;
-                spike_time(n) = round(spike_time_temp) + t;
-                
+                spike_time(n) = round(spike_time_temp) + t;                                
                 force_temp = conv(spike_train_temp,twitch(n,:));
                 force(n,:) = force(n,:)+ force_temp(1:length(time));
             else
@@ -78,7 +77,8 @@ for t = 1:length(time)
                     spike_time_temp = (mu + mu*cv*Z)*Fs;
                     spike_time(n) = round(spike_time_temp) + t;
                     
-                    StimulusRate = T(n)*FR(n);
+                    ISI = (spike_time(n) - t)/Fs;
+                    StimulusRate = T(n)/ISI;
                     if StimulusRate > 0 && StimulusRate <= 0.4
                         g = 1;
                     elseif StimulusRate > 0.4
@@ -86,6 +86,8 @@ for t = 1:length(time)
                         g = (S_MU/StimulusRate)/0.3;
                     end
                     outputG(n,t) = g;
+                    
+                    
                     
                     force_temp = conv(spike_train_temp,g*twitch(n,:));
                     force(n,:) = force(n,:)+ force_temp(1:length(time));
@@ -97,8 +99,7 @@ for t = 1:length(time)
                     Z(Z>3.9) = 3.9;
                     Z(Z<-3.9) = -3.9;
                     spike_time_temp = (mu + mu*cv*Z)*Fs;
-                    spike_time(n) = round(spike_time_temp) + t;                    
-                    
+                    spike_time(n) = round(spike_time_temp) + t;                                        
                     force_temp = conv(spike_train_temp,twitch(n,:));
                     force(n,:) = force(n,:)+ force_temp(1:length(time));
                     
