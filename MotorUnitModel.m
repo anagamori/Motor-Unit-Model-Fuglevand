@@ -86,9 +86,7 @@ for t = 1:length(time)
                         g = (S_MU/StimulusRate)/0.3;
                     end
                     outputG(n,t) = g;
-                    
-                    
-                    
+                                      
                     force_temp = conv(spike_train_temp,g*twitch(n,:));
                     force(n,:) = force(n,:)+ force_temp(1:length(time));
                 elseif FR_mat(n,t-1) == 0
@@ -117,5 +115,6 @@ output.TotalForce = sum(force);
 output.FR = FR_mat;
 output.g = outputG;
 output.index = outputIndex;
+output.Ur = RTEn/Emax;
 
 end
