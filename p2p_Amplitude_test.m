@@ -5,7 +5,7 @@ clc
 Fs = 1000;
 t = 0:1/Fs:5;
 t_stim = 0:1/Fs:3;
-N = 120; %number of motor unit
+N = 300; %number of motor unit
 i_MU = 1:N; %motor unit identification index
 RP = 100; %range of twich force across motor untis in unit of fold
 b = log(RP)/N; %coefficient to establish a range of twich force values
@@ -29,11 +29,12 @@ PFRn = PFR1 - PFRD; %peak firing rate of the last motor unit
 Emax = RTEn + (PFRn - MFR)/g_e; %maximum excitatory input
 
 
-testedUnit = 120;
+testedUnit = 1;
 PFR = PFR(testedUnit);
 %FR = [2 5 10 15 20 25 30 35 40 45 50];
-FR = [2 5 10 15 20 25 30 35 40 45];
-%FR = [2 15 25 35]
+FR = 1:1:70;
+%FR = [1 5 10 20 40];
+%FR = [2 15 25 35 70];
 t_twitch = 0:1/Fs:1;
 twitch = zeros(N,length(t_twitch));
 force = zeros(N,length(t));
@@ -65,6 +66,15 @@ for i = 1:length(FR)
     hold on
 end
 
+%%
+figure(1)
+%xticks([0 1 2 3 4 5])
+%yticks(0:2:10)
+xlabel('Time (s)')
+ylabel('Force (AU)')
+set(gca,'TickDir','out');
+set(gca,'box','off')
+
 p2p_amp = 1 - p2p_amp./p2p_amp(1);
 figure(2)
 plot(FR,amp/amp(end)*100,'LineWidth',2)
@@ -72,6 +82,9 @@ xlabel('Frequency (Hz)','FontSize',14)
 ylabel('Mean Force (%)','FontSize',14)
 h1 = line([MFR MFR],[0 120]);
 h2 = line([PFR PFR],[0 120]);
+set(gca,'TickDir','out');
+set(gca,'box','off')
+
 %patch([8 35 35 8],[0 0 10 10],'r')
 %set(gca,'children',flipud(get(gca,'children')))
 
@@ -81,3 +94,14 @@ xlabel('Frequency (Hz)','FontSize',14)
 ylabel('Degree of Fusion (%)','FontSize',14)
 h3 = line([MFR MFR],[-20 120]);
 h4 = line([PFR PFR],[-20 120]);
+set(gca,'TickDir','out');
+set(gca,'box','off')
+
+figure(4)
+plot(amp/amp(end)*100,p2p_amp*100,'LineWidth',2,'color','b')
+xlabel('Mean Force','FontSize',14)
+ylabel('Degree of Fusion (%)','FontSize',14)
+set(gca,'TickDir','out');
+set(gca,'box','off')
+hold on
+plot(0:1:100,0:1:100,'--','color','k')
