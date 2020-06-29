@@ -2,19 +2,19 @@ close all
 clear all
 clc
 
-data_directory = '/Volumes/DATA2/Motor Unit Model Data/Fuglevand/';
+data_directory = '/Volumes/DATA2/New_Model/Fuglevand/N_120_CV_20';
 code_directory = '/Users/akira/Documents/Github/Motor-Unit-Model-Fuglevand/';
 %load ('Input')
 Fs = 1000;
-t = 0:1/Fs:10;
-amp_temp = 0.1:0.1:1;
+t = 0:1/Fs:15;
+amp_temp = [0.05 0.1:0.1:1];
 CoVAll = zeros(10,length(amp_temp));
 meanForceAll = zeros(10,length(amp_temp));
 stdAll = zeros(10,length(amp_temp));
 pxxAll = zeros(length(amp_temp),301);
-
-for k = 1:length(amp_temp)
-    trialN = k+30; 
+Force_mat = zeros(10,15*Fs+1);
+for k = 0 %0:10 %length(amp_temp)
+    trialN = k; 
     % predefine model parameters
     
     CoV = zeros(1,10);
@@ -33,12 +33,17 @@ for k = 1:length(amp_temp)
         [pxx(i,:),f] = pwelch(Force-mean(Force),gausswin(5*Fs),2.5*Fs,0:0.1:30,Fs,'power');
         pxx(i,:) = pxx(i,:)./sum(pxx(i,:));
         pxx(i,:) = smooth(pxx(i,:),10);
+        Force_mat(i,:) = output.TotalForce;
     end
     
-    meanForceAll(:,k) = mean_Force;
-    stdAll(:,k) =  std_Force;
-    CoVAll(:,k) =  CoV;
-    pxxAll(k,:) = mean(pxx);
+    meanForceAll(:,k+1) = mean_Force;
+    stdAll(:,k+1) =  std_Force;
+    CoVAll(:,k+1) =  CoV;
+    pxxAll(k+1,:) = mean(pxx);
+    
+%     cd(data_directory)
+%     save(['Force_mat_' num2str(k)],'Force_mat')
+%     cd(code_directory)
     
 end
 

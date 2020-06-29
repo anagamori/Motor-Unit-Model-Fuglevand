@@ -5,26 +5,26 @@ clc
 Fs = 1000;
 t = 0:1/Fs:15;
 N_temp = 50:50:1000;
-amp_temp = 0.1:0.1:1;
+amp_temp = [0.05 0.1:0.1:1];
 RP_temp = 10:10:150;
 
 
-data_directory = '/Volumes/DATA2/Motor Unit Model Data/Fuglevand/';
+data_directory = '/Volumes/DATA2/New_Model/Fuglevand/N_120_CV_10';
 code_directory = '/Users/akira/Documents/Github/Motor-Unit-Model-Fuglevand/';
 
 maxForce = 1.9758e+04;
-for k = 1 %:length(amp_temp)
+for k = 0 %:length(amp_temp)
     trialN = k; %+30; 
     % predefine model parameters
-    amp = 0.1; %[0.15 0.41]; %amp_temp(k); 0.15 for 0.05
-    modelParameter.amp = amp(k);
+    amp = amp_temp(k+1); %0.15 for 0.05
+    modelParameter.amp = amp;
     t_sin = [1:7*Fs]/Fs;
-    U = [zeros(1,1*Fs) (amp(k)/2)*(0:1/Fs:2) amp(k)*ones(1,length(t)-3*Fs-1)];
+    U = [zeros(1,1*Fs) (amp/2)*(0:1/Fs:2) amp*ones(1,length(t)-3*Fs-1)];
     
-    modelParameter.N = 300;    
+    modelParameter.N = 120;    
     modelParameter.RR = 17;    
     modelParameter.MFR = 8;   
-    modelParameter.g_e = 1;    
+    modelParameter.g_e = 1.0;    
     modelParameter.PFR1 = 35;   
     modelParameter.PFRD = 10;
     modelParameter.cv = 0.1;    
@@ -35,16 +35,16 @@ for k = 1 %:length(amp_temp)
     
     Data = cell(1,10);
     tic
-    for i = 1
+    for i = 1:10
         % Run motor unit model        
         output = MotorUnitModel(t,U,modelParameter,Fs);       
         Data{i} = output;
     end
     toc
     
-%     cd (data_directory)
-%     save(['Trial_' num2str(trialN)],'Data','-v7.3')
-%     cd (code_directory)
+    cd (data_directory)
+    save(['Trial_' num2str(trialN)],'Data','-v7.3')
+    cd (code_directory)
     
     output_temp = Data{1};
     
@@ -71,47 +71,3 @@ for k = 1 %:length(amp_temp)
 end
 
 
-% figure(2)
-% plot([0 amp_temp*100],[0 meanForce./meanForce(end)*100])
-% xlabel('Excitatory Drive (%)')
-% ylabel('Force (%)')
-% 
-% figure(3)
-% plot(amp_temp*100,SD)
-% xlabel('Excitatory Drive (%)')
-% ylabel('SD (AU)')
-% 
-% figure(4)
-% plot(amp_temp*100,CoV*100)
-% xlabel('Excitatory Drive (%)')
-% ylabel('CoV (AU)')
-
-% figure(5)
-% plot(t,output.SpikeTrain(1,:))
-% xlim([8 9])
-%%
-figure_unit = 2;
-figure(6)
-plot(t,output.Force(figure_unit,:),'k','LineWidth',2)
-xlim([8 9])
-%ylim([1 10])
-CoV_unit = std(output.Force(figure_unit,8*Fs:9*Fs))/mean(output.Force(figure_unit,8*Fs:9*Fs))
-
-%%
-figure(6)
-plot(t,output.TotalForce,'k','LineWidth',2)
-xlim([8 9])
-ylim([450 550])
-CoV_unit = std(output.TotalForce(8*Fs:9*Fs))/mean(output.TotalForce(8*Fs:9*Fs))
-
-%ylim([6 9.5])
-
-% CS = sum(output.SpikeTrain);
-% 
-% [pxx,f] = pwelch(Force-mean(Force),[],[],0:0.1:50,Fs,'power');
-% [pxx2,f] = pwelch(CS-mean(CS),[],[],0:0.1:50,Fs,'power');
-% figure(2)
-% plot(f,pxx)
-% 
-% figure(3)
-% plot(f,pxx2)
